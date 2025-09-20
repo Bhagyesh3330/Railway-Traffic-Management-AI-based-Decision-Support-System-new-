@@ -1,31 +1,23 @@
-// Load environment variables from .env
-require('dotenv').config();
-
+// backend/src/index.js
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db'); // PostgreSQL connection
-const trainsRouter = require('./routes/trains');
-const aiRouter = require('./routes/ai');
+const bodyParser = require('body-parser');
+
+const authRouter = require('./routes/auth');
 
 const app = express();
+
+// Middlewares
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// Routes
-app.use('/api/trains', trainsRouter);
-app.use('/api/ai', aiRouter);
+// Mount auth router
+app.use('/api/auth', authRouter);
 
-// Optional: test database connection
-app.get('/api/test-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database test failed' });
-  }
-});
+// TODO: keep adding your other routes here, e.g.:
+// const otherRouter = require('./routes/other');
+// app.use('/api/other', otherRouter);
 
-// Start server
+// Server start
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Railway DSS backend running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Backend running on ${PORT}`));
